@@ -2,27 +2,25 @@
 #include <cstdlib>//header file that contains the rand() function
 #include <ctime>//header file that contains srand() fuction
 #include <locale>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 using namespace std;
 int range1, range2;
 int num_of_trials;
+const int MAX_TRIES=5;
+int letterFill (char, string, string&);
 void playGuessGame()
 {
     char answer;
     char name[30];
     cout<<"HELLO, WHAT'S YOUR NAME ?\n";
     cin>>name;
-    strupr(name);
-    cout<<"HELLO "<<name<<", YOU ARE ABOUT TO PLAY A GUESS GAME\n";
-    strrev(name);
-    cout<<"HERE IS YOUR NAME IN REVERSE :D\n" ;
-    cout<< name;
-    cout<<"\n*******************************************************************\n";
-    cout<<"\nYOU ARE TO GUESS A NUMBER FROM ONE(1) TO ONE HUNDRED(100)\n";
-    cout<<"YOU HAVE FIVE(5) NUMBER OF TRIALS/n";
+    locale loc;
+    string str= name;
+    cout<<"HELLO ";
+    for (string::size_type i=0; i<str.length(); ++i)
+                    cout << toupper(str[i],loc);
+    cout<<", YOU ARE ABOUT TO PLAY A GUESS GAME\n";
+    cout<<"YOU ARE TO GUESS A NUMBER FROM ONE(1) TO ONE HUNDRED(100)\n";
+    cout<<"YOU HAVE FIVE(5) NUMBER OF TRIALS\n";
     cout<<"GOOD LUCK!!!!!!!!!\n";
     while (answer !='n')
    {
@@ -63,6 +61,7 @@ void playGuessGame()
             else if (answer == 'N' || answer =='n')
             {
                 cout<<"GAME SHUTTING DOWN\n";
+                break;
             }
             else{
                 cout<<"PLEASE TYPE 'Y' TO PLAY OR TYPE 'N' TO QUIT\n";
@@ -96,7 +95,12 @@ void customGame()
     char name[30];
     cout<<"HELLO, WHAT'S YOUR NAME ?\n";
     cin>>name;
-    cout<<"HELLO "<<name<<", YOU ARE ABOUT TO PLAY A GUESS GAME\n";
+    locale loc;
+    string str= name;
+    cout<<"HELLO ";
+    for (string::size_type i=0; i<str.length(); ++i)
+                    cout << toupper(str[i],loc);
+    cout<<", YOU ARE ABOUT TO PLAY A GUESS GAME\n";
     cout<<"YOU ARE TO GUESS A NUMBER FROM "<<range1<<" TO "<< range2<<endl;
     cout<<"YOU HAVE "<<num_of_trials<<" NUMBER OF TRIALS\n";
     cout<<"GOOD LUCK!!!!!!!!!\n";
@@ -129,7 +133,7 @@ void customGame()
                 break;
             }
         }
-        if (trials == 5)
+        if (trials == num_of_trials)
             {
                 cout<<"SORRY, YOU'VE LOST ALL YOUR CHANCES \n";
                 cout<<"THE CORRECT NUMBER IS "<<number<<endl ;
@@ -151,16 +155,17 @@ int main()
 {
     int choice;
     cout <<"WELCOME TO GROUP SIX GAMING SYSTEM \n";
-    cout <<"WHICH GAME WILL YOU LIKE TO PLAY \n";
+    cout <<"DO YOU WANT TO PLAY?\n";
     cout <<"TYPE 1. GUESS THE NUMBER \n";
-    cout <<"TYPE 2. TO END PROGRAM\n";
+    cout <<"TYPE 2. HANGMAN\n";
+    cout <<"TYPE 3. TO END GAME\n";
     cout <<"TYPE THE NUMBER BELOW\n";
     cin>>choice;
     if (choice == 1) // this is where the guess number game will be called
     {
         cout<<"WOULD YOU LIKE TO PLAY A DEFAULT GAME OR A CUSTOM GAME? \n";
-        cout<<"1 FOR DEFAULT GAME \n";
-        cout<<"2 FOR CUSTOM GAME \n";
+        cout<<"1 FOR DEFAULT GAME ------> HERE YOU GUESS BTW 1 - 100 AND HAVE FIVE(5) TRIES \n";
+        cout<<"2 FOR CUSTOM GAME ------> YOU DECIDE THE RULES OF THIS GAME \n";
         int option;
         cin>>option;
         if (option == 1)
@@ -175,11 +180,242 @@ int main()
             cout<<"THAT IS NOT ONE OR TWO SYSTEM SHUTTING DOWN\n";
         }
 
-
     }
 
-    if (choice == 2)// the part was left open to make the program faster
+    if (choice == 2)
     {
+        char name[30];
+        char letter;
+        int num_of_wrong_guesses=0;
+        string word;
+        string words[15];
+        int choice;
+        cout << "SO WHAT'S YOUR NAME USER ?\n";
+        cin >> name;
+        locale loc;
+        string str = name;
+        cout<<"HELLO ";
+        for (string::size_type i=0; i<str.length(); ++i)
+            cout << toupper(str[i],loc);
+        cout << ", THIS IS THE HANGMAN PROGRAM\n";
+        cout << "IN THIS GAME YOU GET TO GUESS WORDS BY GUESSING THE LETTER ONE BY ONE\n";
+        cout << "\n";
+        choice = -1;
+
+        while (choice < 4)
+        {
+            cout << "WHAT CATEGORY OF WORDS WOULD YOU LIKE TO GUESS\n";
+            cout << "1. COUNTRIES\n";
+            cout << "2. NAMES\n";
+            cout << "3. MOVIES\n";
+            cout << "4. END GAME\n";
+            cin >> choice;
+            if (choice == 1){
+            //choose and copy a word from array of words randomly
+            string words[15] = {"albania","switzerland","nigeria","paraguay","madagascar","england","brazil","argentina","burkina faso","ghana","australia","afghanistan","grenada","qatar","Mozambique"};
+            srand((int)time(0));
+            //randomly choices numbers from 0-11
+            int n=((rand()%11));
+            word=words[n];
+            //replaces the words with *
+            string unknown(word.length(),'*');
+            cout << "EACH LETTER IS REPRESENTED AS AN ASTERISK\n";
+            cout << "YOU HAVE TO TYPE ONLY ONE LETTER AT A TIME\n";
+            cout << "YOU HAVE "<< MAX_TRIES << " TRIES TO TRY AND GUESS THE COUNTRY.\n";
+            // Loop until the guesses are used up
+            while (num_of_wrong_guesses < MAX_TRIES)
+            {
+                cout << "\n\n" << unknown;
+                cout << "\n\nGuess a letter: ";
+                cin >> letter;
+                // changes capital letter to small letter
+                letter = tolower(letter);
+                // Fill secret word with letter if the guess is correct,
+                // otherwise increment the number of wrong guesses.
+                if (letterFill(letter, word,unknown)==0)
+                {
+                    if(isalpha(letter)){
+                        cout << endl << "Whoops! That letter isn't in there!" << endl;
+                        num_of_wrong_guesses++;
+                    }
+                    else{
+                        cout << endl << "THAT IS'NT EVEN A LETTER" << endl;
+                        num_of_wrong_guesses++;
+                    }
+
+                }
+                else
+                {
+                    cout << endl << "Great, You found a letter! " << endl;
+                }
+                // Tell user how many guesses has left.
+                cout << "You have " << MAX_TRIES - num_of_wrong_guesses;
+                cout << " guesses left." << endl;
+                // Check if user guessed the word.
+                if (word==unknown)
+                {
+                    cout << word << endl;
+                    cout << "Yeah! You got it!";
+                    break;
+                }
+            }
+        if(num_of_wrong_guesses == MAX_TRIES)
+        {
+            cout << "\nSorry, you lose...you've been hanged." << endl;
+            cout << "The word was : " << word << endl;
+        }
+        cin.ignore();
+        cin.get();
+
+        }
+        else if (choice == 2){
+            string words[15] = {"joshua","noel","hikima","khloe","cartman","melchizedek","balogun","bright","chidinma","beautrice","angelina","testimony","quincy","pamela","kim"};
+            //choose and copy a word from array of words randomly
+            srand((int)time(0));
+            int n=((rand()%11)); //randomly choices numbers from 0-11
+            word=words[n];
+            //replaces the words with *
+            string unknown(word.length(),'*');
+            cout << "EACH LETTER IS REPRESENTED AS AN ASTERISK\n";
+            cout << "YOU HAVE TO TYPE ONLY ONE LETTER AT A TIME\n";
+            cout << "YOU HAVE "<< MAX_TRIES << " TRIES TO TRY AND GUESS THE NAME.\n";
+
+            // Loop until the guesses are used up
+            while (num_of_wrong_guesses < MAX_TRIES)
+            {
+                cout << "\n\n" << unknown;
+                cout << "\n\nGuess a letter: ";
+                cin >> letter;
+                letter = letter + 32;
+                // Fill secret word with letter if the guess is correct,
+                // otherwise increment the number of wrong guesses.
+                if (letterFill(letter, word, unknown)==0)
+                {
+                    if(isalpha(letter)){
+                        cout << endl << "Whoops! That letter isn't in there!" << endl;
+                        num_of_wrong_guesses++;
+                        }
+                    else{
+                        cout << endl << "THAT IS'NT EVEN A LETTER" << endl;
+                        num_of_wrong_guesses++;
+                    }
+
+                }
+                else
+                {
+                    cout << endl << "Great, You found a letter! " << endl;
+                }
+                // Tell user how many guesses has left.
+                cout << "You have " << MAX_TRIES - num_of_wrong_guesses;
+                cout << " guesses left." << endl;
+                // Check if user guessed the word.
+                if (word==unknown)
+                {
+                    cout << word << endl;
+                    cout << "Yeah! You got it!";
+                    break;
+                }
+            }
+        if(num_of_wrong_guesses == MAX_TRIES)
+        {
+            cout << "\nSorry, you lose...you've been hanged." << endl;
+            cout << "The name was : " << word << endl;
+        }
+cin.ignore();
+cin.get();
+}
+        else if (choice == 3){
+            string words[15] = {"jumanji","thor ragnorok","justice league","it","overdrive","power rangers","hitman bodyguard","spiderman homecoming","black panther","avengers infinity wars","dunkirk","john wick","hidden figures","wonder woman","logan"};
+            //choose and copy a word from array of words randomly
+            srand((int)time(0));
+            int n=((rand()%11)); //randomly choices numbers from 0-11
+            word=words[n];
+            //replaces the words with *
+            string unknown(word.length(),'*');
+            cout << "EACH LETTER IS REPRESENTED AS AN ASTERISK\n";
+            cout << "YOU HAVE TO TYPE ONLY ONE LETTER AT A TIME\n";
+            cout << "YOU HAVE "<< MAX_TRIES << " TRIES TO TRY AND GUESS THE MOVIE.\n";
+
+            // Loop until the guesses are used up
+            while (num_of_wrong_guesses < MAX_TRIES)
+            {
+                cout << "\n" << unknown;
+                cout << "\nGuess a letter: ";
+                cin >> letter;
+                letter = letter + 32;
+                // Fill secret word with letter if the guess is correct,
+                // otherwise increment the number of wrong guesses.
+                if (letterFill(letter, word, unknown)==0)
+                {
+                    if(isalpha(letter)){
+                        cout << endl << "Whoops! That letter isn't in there!" << endl;
+                        num_of_wrong_guesses++;
+                        }
+                    else{
+                        cout << endl << "THAT IS'NT EVEN A LETTER" << endl;
+                        num_of_wrong_guesses++;
+                    }
+
+                }
+                else
+                {
+                    cout << endl << "Great, You found a letter! " << endl;
+                }
+                // Tell user how many guesses has left.
+                cout << "You have " << MAX_TRIES - num_of_wrong_guesses;
+                cout << " guesses left." << endl;
+                // Check if user guessed the word.
+                if (word==unknown)
+                {
+                    cout << word << endl;
+                    cout << "Yeah! You got it!";
+                    break;
+                }
     }
-    return 0;
+        if(num_of_wrong_guesses == MAX_TRIES)
+        {
+            cout << "\nSorry, you lose...you've been hanged." << endl;
+            cout << "The movie was : " << word << endl;
+        }
+    cin.ignore();
+    cin.get();
+}
+    else if (choice == 4){
+        cout << "GAME SHUTTING DOWN\n";
+        break;
+    }
+    else{
+        cout << "GAME SHUTTING DOWN\n";
+        cout << "NEXT TIME,PLEASE TYPE IN THE GIVEN OPTIONS (1,2,3,4)\n";
+        break;
+    }
+
+}
+
+}
+
+return 0;
+    }
+/* Take a one character guess and the secret word, and fill in the
+unfinished guessword. Returns number of characters matched.
+Also, returns zero if the character is already guessed. */
+int letterFill (char guess, string secretword, string &guessword)
+{
+    int i;
+    int matches=0;
+    int len=secretword.length();
+    for (i = 0; i< len; i++)
+    {
+    // Did we already match this letter in a previous guess?
+        if (guess == guessword[i])
+            return 0;
+    // Is the guess in the secret word?
+        if (guess == secretword[i])
+        {
+            guessword[i] = guess;
+            matches++;
+        }
+    }
+return matches;
+
 }
